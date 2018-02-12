@@ -1,0 +1,20 @@
+{
+  "name": "flashcards",
+  "description": "JS Flash Cards",
+  "main": "index.js",
+  "authors": [
+    "Kyle Tenzeldam / Byron Chang"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.3.1"
+  }
+}
