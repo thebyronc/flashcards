@@ -1,47 +1,51 @@
 import { Cards } from './../js/cards.js';
 
 $(document).ready(function() {
+  let cards = new Cards();
+  let round = 0;
+  let score = 0;
   $("#start").click(function() {
-    let cards = new Cards();
-    $("#question").html(`${cards.question[1]}`);
-    for(let index = 1; index <= 4; index++) {
-      $("#answers").append(`
-          <div class="card blue-grey darken-1">
-            <div class="card-content white-text">
-              <p>
-                <input name="group" type="radio" value="${index}" id="a${index}" />
-                <label for="a${index}">${cards.answer[index]}</label>
-              </p>
-            </div>
-          </div>
-        `);
-    }
 
 
-    $('input[name=group]').change(function() {
-      $("#answers").submit(function(event) {
-        event.preventDefault();
-        clearInterval(countDown);
-        let response = $("input:radio[name=group]:checked").val();
-        if(response == 1) {
-          $(".countDown").html(`<h1>CORRECT</h1>`);
-        } else {
-          $(".countDown").html(`<h1>WRONG!!</h1>`);
-        }
-      });
-    });
-
-
-
-    let countDown = setInterval(function(){
-      if (cards.count > 0){
-          cards.count--;
-      } else {
-        clearInterval(countDown);
-      }
-      console.log(cards.count);
-      $(".countDown").html(`<h1>${cards.count}</h1>`);
-    }, 1000);
+    runGame();
   });
 
+  let runGame = function() {
+    if(round < 10) {
+      round++;
+
+      console.log("Current round: " + round);
+      console.log("Current score: " + score);
+      let qID = cards.printQA();
+      $('input[type=radio]').click(function(event) {
+          event.preventDefault();
+          let response = $("input:radio[name=group]:checked").val();
+          if(response == qID) {
+            // $(".countDown").html(`<h1>CORRECT</h1>`);
+            $("#q" + qID).html(`<h3>CORRECT</h3>`);
+
+            score++;
+          } else {
+            $(".countDown").html(`<h1>WRONG!!</h1>`);
+          }
+      });
+
+      let countDown = setInterval(function(){
+        if(cards.count > 0){
+            cards.count--;
+            $(".countDown").html(`<h1>${cards.count}</h1>`);
+        } else {
+          $(".countDown").html(`<h1>MISSED!!</h1>`);
+          clearInterval(countDown);
+          cards.count = 10;
+          setTimeout(runGame(), 3000);
+        }
+
+      }, 1000);
+
+    } else {
+      console.log("Game Over");
+    }
+
+  }
 });

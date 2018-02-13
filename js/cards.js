@@ -14,7 +14,7 @@ export class Cards {
       4: "used to store multiple values in a single variable",
       5: "is a block of code designed to perform a particular task."
     };
-    this.usedQuestions = [1];
+    this.usedQuestions = [];
     this.count = 10;
   }
 
@@ -27,10 +27,15 @@ export class Cards {
     return this.answer[value];
   }
   getOtherAnswers(value){
-
-    // for(let i = 1; i <= Object.keys(this.answer).length); i++) {
-    //   if(value != this.answer(i))
-    // }
+    let incorrectAnswers = [];
+    for(let i = 1; i <= Object.keys(this.answer).length; i++) {
+      if(value != i) {
+        incorrectAnswers.push(i);
+      }
+    }
+    incorrectAnswers.sort(function(a, b){return 0.5 - Math.random()});
+    incorrectAnswers.splice(3, incorrectAnswers.length - 3);
+    return incorrectAnswers;
   }
 
   getMatch(valueQ, valueA){
@@ -52,7 +57,6 @@ export class Cards {
         console.log("Reached Else");
       }
     }
-    console.log(availableQuestions);
 
     var currentIndex = availableQuestions.length, temporaryValue, randomIndex;
     while (0 !== currentIndex) {
@@ -62,10 +66,29 @@ export class Cards {
       availableQuestions[currentIndex] = availableQuestions[randomIndex];
       availableQuestions[randomIndex] = temporaryValue;
     }
-    // let random = Object.entries(availableQuestions)[0];
     return availableQuestions[0];
   }
 
-
+  printQA() {
+    let randomQuestion = this.pickRandomQuestion();
+    $("#question").html(`${this.question[randomQuestion]}`);
+    let allAnswers = this.getOtherAnswers(randomQuestion);
+    allAnswers.push(randomQuestion);
+    allAnswers.sort(function(a, b){return 0.5 - Math.random()});
+    $("#answers").html('');
+    for(let i = 0; i < allAnswers.length; i++) {
+      $("#answers").append(`
+          <div class="card blue-grey darken-1">
+            <div class="card-content white-text" id="q${allAnswers[i]}">
+              <p>
+                <input name="group" type="radio" value="${allAnswers[i]}" id="a${allAnswers[i]}" />
+                <label for="a${allAnswers[i]}">${this.answer[allAnswers[i]]}</label>
+              </p>
+            </div>
+          </div>
+        `);
+    }
+    return randomQuestion;
+  }
 
 }

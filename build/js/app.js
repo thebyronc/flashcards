@@ -27,7 +27,7 @@ var Cards = exports.Cards = function () {
       4: "used to store multiple values in a single variable",
       5: "is a block of code designed to perform a particular task."
     };
-    this.usedQuestions = [1];
+    this.usedQuestions = [];
     this.count = 10;
   }
 
@@ -45,10 +45,17 @@ var Cards = exports.Cards = function () {
   }, {
     key: "getOtherAnswers",
     value: function getOtherAnswers(value) {
-
-      // for(let i = 1; i <= Object.keys(this.answer).length); i++) {
-      //   if(value != this.answer(i))
-      // }
+      var incorrectAnswers = [];
+      for (var i = 1; i <= Object.keys(this.answer).length; i++) {
+        if (value != i) {
+          incorrectAnswers.push(i);
+        }
+      }
+      incorrectAnswers.sort(function (a, b) {
+        return 0.5 - Math.random();
+      });
+      incorrectAnswers.splice(3, incorrectAnswers.length - 3);
+      return incorrectAnswers;
     }
   }, {
     key: "getMatch",
@@ -72,7 +79,6 @@ var Cards = exports.Cards = function () {
           console.log("Reached Else");
         }
       }
-      console.log(availableQuestions);
 
       var currentIndex = availableQuestions.length,
           temporaryValue,
@@ -84,8 +90,23 @@ var Cards = exports.Cards = function () {
         availableQuestions[currentIndex] = availableQuestions[randomIndex];
         availableQuestions[randomIndex] = temporaryValue;
       }
-      // let random = Object.entries(availableQuestions)[0];
       return availableQuestions[0];
+    }
+  }, {
+    key: "printQA",
+    value: function printQA() {
+      var randomQuestion = this.pickRandomQuestion();
+      $("#question").html("" + this.question[randomQuestion]);
+      var allAnswers = this.getOtherAnswers(randomQuestion);
+      allAnswers.push(randomQuestion);
+      allAnswers.sort(function (a, b) {
+        return 0.5 - Math.random();
+      });
+      $("#answers").html('');
+      for (var i = 0; i < allAnswers.length; i++) {
+        $("#answers").append("\n          <div class=\"card blue-grey darken-1\">\n            <div class=\"card-content white-text\" id=\"q" + allAnswers[i] + "\">\n              <p>\n                <input name=\"group\" type=\"radio\" value=\"" + allAnswers[i] + "\" id=\"a" + allAnswers[i] + "\" />\n                <label for=\"a" + allAnswers[i] + "\">" + this.answer[allAnswers[i]] + "</label>\n              </p>\n            </div>\n          </div>\n        ");
+      }
+      return randomQuestion;
     }
   }]);
 
@@ -98,36 +119,49 @@ var Cards = exports.Cards = function () {
 var _cards = require("./../js/cards.js");
 
 $(document).ready(function () {
+  var cards = new _cards.Cards();
+  var round = 0;
+  var score = 0;
   $("#start").click(function () {
-    var cards = new _cards.Cards();
-    $("#question").html("" + cards.question[1]);
-    for (var index = 1; index <= 4; index++) {
-      $("#answers").append("\n          <div class=\"card blue-grey darken-1\">\n            <div class=\"card-content white-text\">\n              <p>\n                <input name=\"group\" type=\"radio\" value=\"" + index + "\" id=\"a" + index + "\" />\n                <label for=\"a" + index + "\">" + cards.answer[index] + "</label>\n              </p>\n            </div>\n          </div>\n        ");
-    }
 
-    $('input[name=group]').change(function () {
-      $("#answers").submit(function (event) {
+    runGame();
+  });
+
+  var runGame = function runGame() {
+    if (round < 10) {
+      round++;
+
+      console.log("Current round: " + round);
+      console.log("Current score: " + score);
+      var qID = cards.printQA();
+      $('input[type=radio]').click(function (event) {
         event.preventDefault();
-        clearInterval(countDown);
         var response = $("input:radio[name=group]:checked").val();
-        if (response == 1) {
-          $(".countDown").html("<h1>CORRECT</h1>");
+        if (response == qID) {
+          // $(".countDown").html(`<h1>CORRECT</h1>`);
+          $("#q" + qID).html("<h3>CORRECT</h3>");
+
+          score++;
         } else {
           $(".countDown").html("<h1>WRONG!!</h1>");
         }
       });
-    });
 
-    var countDown = setInterval(function () {
-      if (cards.count > 0) {
-        cards.count--;
-      } else {
-        clearInterval(countDown);
-      }
-      console.log(cards.count);
-      $(".countDown").html("<h1>" + cards.count + "</h1>");
-    }, 1000);
-  });
+      var countDown = setInterval(function () {
+        if (cards.count > 0) {
+          cards.count--;
+          $(".countDown").html("<h1>" + cards.count + "</h1>");
+        } else {
+          $(".countDown").html("<h1>MISSED!!</h1>");
+          clearInterval(countDown);
+          cards.count = 10;
+          setTimeout(runGame(), 3000);
+        }
+      }, 1000);
+    } else {
+      console.log("Game Over");
+    }
+  };
 });
 
 },{"./../js/cards.js":1}]},{},[2]);

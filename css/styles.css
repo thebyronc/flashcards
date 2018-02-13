@@ -16,7 +16,13 @@
   margin: 0px;
   text-align: center;
 }
-
+.card {
+  min-height: 150px;
+}
 .card:hover {
- background-color: #292929;
+ background-color: #292929 !important;
+}
+
+label {
+  color: #FFFFFF;
 }
