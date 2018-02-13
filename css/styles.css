@@ -1,0 +1,22 @@
+.questionSide{
+  width: 45%;
+  height: 100%;
+  float: left;
+  margin: 2.5%;
+}
+
+.answerSide{
+  width: 45%;
+  float: left;
+  margin: 2.5%;
+}
+
+.countDown{
+  height: 80px;
+  margin: 0px;
+  text-align: center;
+}
+
+.card:hover {
+ background-color: #292929;
+}
